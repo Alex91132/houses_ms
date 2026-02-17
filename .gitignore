@@ -22,3 +22,5 @@ env/
 *.db
 .DS_Store
 Thumbs.db
+/app/data.py
+.env

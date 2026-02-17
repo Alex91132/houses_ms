@@ -1,3 +1,6 @@
+from dotenv import load_dotenv
+load_dotenv() 
+
 from fastapi import FastAPI
 
 from app.api.endpoints.houses import houses_router

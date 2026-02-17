@@ -6,6 +6,9 @@ from typing import List, Optional, Literal
 
 from app.data import houses_list
 from app.schemas.house import HouseDetailSchema, HouseItemSchema
+from app.api.deps import DBSessionDep
+
+from sqlmodel import text
 
 houses_router = APIRouter(prefix="/houses", tags=["houses"])
 
@@ -16,11 +19,14 @@ SortOrder = Literal["asc", "desc"]
 
 @houses_router.get("/", response_model=List[HouseItemSchema])
 async def get_houses(
+    session: DBSessionDep,
     min_price: Optional[int] = Query(None, ge=0),
     max_price: Optional[int] = Query(None, ge=0),
     order_by: Optional[SortField] = Query("id"),
     order: Optional[SortOrder] = Query("asc"),
 ):
+
+    print(session.exec(text("SELECT 1")))
 
     houses = [h for h in houses_list if h["active"]]
 
