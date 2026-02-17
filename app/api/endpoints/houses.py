@@ -2,7 +2,7 @@ from fastapi import APIRouter
 from fastapi import HTTPException
 from fastapi import Query
 
-from typing import List, Optional
+from typing import List, Optional, Literal
 
 from app.data import houses_list
 from app.schemas.house import HouseDetailSchema, HouseItemSchema
@@ -10,10 +10,16 @@ from app.schemas.house import HouseDetailSchema, HouseItemSchema
 houses_router = APIRouter(prefix="/houses", tags=["houses"])
 
 
+SortField = Literal["id", "price", "name"]
+SortOrder = Literal["asc", "desc"]
+
+
 @houses_router.get("/", response_model=List[HouseItemSchema])
 async def get_houses(
     min_price: Optional[int] = Query(None, ge=0),
     max_price: Optional[int] = Query(None, ge=0),
+    order_by: Optional[SortField] = Query("id"),
+    order: Optional[SortOrder] = Query("asc"),
 ):
 
     houses = [h for h in houses_list if h["active"]]
@@ -23,6 +29,11 @@ async def get_houses(
 
     if max_price is not None:
         houses = [h for h in houses if h["price"] <= max_price]
+
+    # Сортировка
+
+    reverse = order == "desc"
+    houses.sort(key=lambda h: h[order_by], reverse=reverse)
 
     return houses
 
